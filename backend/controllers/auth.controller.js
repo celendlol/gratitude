@@ -1,10 +1,12 @@
-const config = require("../config/auth.config");
 const db = require("../models");
 const User = db.user;
 const Role = db.role;
 
-var jwt = require("jsonwebtoken");
-var bcrypt = require("bcryptjs");
+require('dotenv').config();
+
+let secret_key = process.env.SECRET_KEY
+let jwt = require("jsonwebtoken");
+let bcrypt = require("bcryptjs");
 
 exports.signup = (req, res) => {
   const user = new User({
@@ -89,7 +91,7 @@ exports.signin = (req, res) => {
         });
       }
 
-      var token = jwt.sign({ id: user.id }, config.secret, {
+      var token = jwt.sign({ id: user.id }, secret_key, {
         expiresIn: 86400 // 24 hours
       });
 

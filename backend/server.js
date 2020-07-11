@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const dbConfig = require("./app/config/db.config");
+require('dotenv').config();
 
 const app = express();
 
@@ -15,13 +15,16 @@ app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const db = require("./app/models");
+const db = require("./models");
 const Role = db.role;
 
+const uri = process.env.ATLAS_URI;
+console.log(uri);
 db.mongoose
-  .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
+  .connect(uri, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex: true
   })
   .then(() => {
     console.log("Successfully connect to MongoDB.");
@@ -36,8 +39,8 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to gratitude application." });
 });
 
-require("./app/routes/auth.routes")(app);
-require("./app/routes/user.routes")(app);
+require("./routes/auth.routes")(app);
+require("./routes/user.routes")(app);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
