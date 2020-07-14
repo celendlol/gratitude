@@ -19,7 +19,6 @@ const db = require("./models");
 const Role = db.role;
 
 const uri = process.env.ATLAS_URI;
-console.log(uri);
 db.mongoose
   .connect(uri, {
     useNewUrlParser: true,
