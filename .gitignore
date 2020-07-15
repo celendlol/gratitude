@@ -1,5 +1,5 @@
 node_modules
 package-lock.json
 
-#api key and secret key
+#api key
 .env
