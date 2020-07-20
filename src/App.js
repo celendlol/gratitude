@@ -8,6 +8,7 @@ import Register from './components/register'
 import Login from './components/login'
 import GratitudeList from './components/gratitude-list'
 import CreateGratitude from './components/create-gratitude'
+import Profile from './components/profile'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <br />
         <Route path="/" exact component={GratitudeList}/>
         <Route path="/create-gratitude" component={CreateGratitude}/>
+        <Route path="/profile" component={Profile}/>
         <Route path="/register" component={Register}/>
         <Route path="/login" component={Login}/>
       </div>
