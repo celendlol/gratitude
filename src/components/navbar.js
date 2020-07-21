@@ -2,18 +2,35 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import AuthService from "../services/auth";
 
+function handleLogout(e){
+  AuthService.logout();
+  window.location = '/login';
+}
+
 function Display(props){
   const isLoggedIn = props.isLoggedIn;
   if (isLoggedIn) {
-    return <li className="navbar-item">
+    return (
+      <ul className="navbar-nav">
+        <li className="navbar-item">
         <Link to="/profile" className="nav-link">Profile</Link>
-        {/* logout */}
         </li>
+        <li className="navbar-item">
+        <Link className="nav-link" onClick={handleLogout}>Logout</Link>
+        </li>
+      </ul>
+    )
   }
-  return <ul className="navbar-nav mr-auto"><li className="navbar-item">
-  <Link to="/login" className="nav-link">Login</Link>
-  <Link to="/register" className="nav-link">Register</Link>
-  </li></ul>
+  return (
+    <ul className="navbar-nav">
+      <li className="navbar-item">
+      <Link to="/login" className="nav-link">Login</Link>
+      </li>
+      <li className="navbar-item">
+      <Link to="/register" className="nav-link">Register</Link>
+      </li>
+    </ul>
+  )
 }
 
 export default class Navbar extends Component {
@@ -26,7 +43,7 @@ export default class Navbar extends Component {
 
   render() {
 
-    const isLoggedIn = (AuthService.getCurrentUser() === null) ? false : true;
+    const isLoggedIn = (AuthService.getCurrentUser() != null) ? true : false;
 
     return (
         <nav className="navbar navbar-dark bg-dark navbar-expand-lg">
@@ -40,21 +57,7 @@ export default class Navbar extends Component {
                 <Link to="/create-gratitude" className="nav-link">Add Gratitude</Link>
                 </li>
             </ul>
-            {/* <ul className="navbar-nav"> */}
-                {/* <li className="navbar-item">
-                <Link to="/profile" className="nav-link">Profile</Link>
-                </li>
-                <li className="navbar-item">
-                <Link to="/login" className="nav-link">Login</Link>
-                </li>
-                <li className="navbar-item">
-                <Link to="/register" className="nav-link">Register</Link>
-                </li> */}
-                <Display isLoggedIn={isLoggedIn}/>
-                <li className="navbar-item">
-                <div onClick={this.logout}>Logout</div>
-                </li>
-            {/* </ul> */}
+            <Display isLoggedIn={isLoggedIn}/>
           </div>
         </nav>
       );
