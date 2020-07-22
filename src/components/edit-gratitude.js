@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import AuthService from '../services/auth'
 
 export default class EditGratitude extends Component {
   constructor(props) {
@@ -9,19 +10,17 @@ export default class EditGratitude extends Component {
     this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
-      username: '',
+      username: AuthService.getCurrentUser().username,
       description: ''
     }
   }
 
   componentDidMount() {
-    axios.get('http://localhost:8080/api/gratitude/'+this.props.match.params.id)
+    axios.get('http://localhost:8080/api/gratitude/retrieve/'+this.props.match.params.id)
       .then(response => {
         this.setState({
-          username: response.data.username,
           description: response.data.description
         })   
-        console.log(response);
       })
       .catch(function (error) {
         console.log(error);
@@ -46,7 +45,7 @@ export default class EditGratitude extends Component {
     axios.put('http://localhost:8080/api/gratitude/update/' + this.props.match.params.id, gratitude)
       .then(res => console.log(res.data));
 
-     window.location = '/';
+    window.location = '/';
   }
 
   render() {

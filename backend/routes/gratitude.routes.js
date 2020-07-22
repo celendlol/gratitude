@@ -11,7 +11,7 @@ module.exports = function(app) {
   
   app.get("/api/gratitude/:username", controller.getGratitudes);
 
-  app.get("/api/gratitude/:id", controller.getGratitude);
+  app.get("/api/gratitude/retrieve/:id", controller.getGratitude);
 
   app.post("/api/gratitude/add", controller.addGratitude);
 
