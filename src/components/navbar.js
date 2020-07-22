@@ -16,7 +16,7 @@ function Display(props){
         <Link to="/profile" className="nav-link">Profile</Link>
         </li>
         <li className="navbar-item">
-        <Link className="nav-link" onClick={handleLogout}>Logout</Link>
+        <div className="nav-link" style={{cursor: 'pointer'}} onClick={handleLogout}>Logout</div>
         </li>
       </ul>
     )
@@ -34,12 +34,6 @@ function Display(props){
 }
 
 export default class Navbar extends Component {
-
-  logout(e) {
-    AuthService.logout();
-    window.location.reload(true);
-  }
-
 
   render() {
 

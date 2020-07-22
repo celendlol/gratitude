@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import AuthService from "../services/auth";
+import Button from 'react-bootstrap/Button';
 
 const Gratitude = props => (
     <tr>
-      <td>{props.gratitude.username}</td>
       <td>{props.gratitude.description}</td>
       <td>
-        <Link to={"/edit/"+props.gratitude._id}>edit</Link> | <a href="#" onClick={() => { props.deleteGratitude(props.gratitude._id) }}>delete</a>
+        <Link to={"/edit/"+props.gratitude._id}><Button variant="primary">edit</Button></Link>
+        <Button variant="danger" onClick={() => { props.deleteGratitude(props.gratitude._id) }}>delete</Button>
       </td>
     </tr>
   )
@@ -19,11 +21,13 @@ export default class GratitudeList extends Component {
     
         this.deleteGratitude = this.deleteGratitude.bind(this)
     
-        this.state = {gratitudes: []};
+        this.state = {
+          gratitudes: []
+        };
       }
     
       componentDidMount() {
-        axios.get('http://localhost:8080/api/gratitude/')
+        axios.get('http://localhost:8080/api/gratitude/'+AuthService.getCurrentUser().username)
           .then(response => {
             this.setState({ gratitudes: response.data })
           })
@@ -35,9 +39,9 @@ export default class GratitudeList extends Component {
       deleteGratitude(id) {
         axios.delete('http://localhost:8080/api/gratitude/'+id)
           .then(response => { console.log(response.data)});
-    
+          
         this.setState({
-            gratitude: this.state.gratitude.filter(el => el._id !== id)
+            gratitudes: this.state.gratitudes.filter(el => el._id !== id)
         })
       }
     
@@ -54,7 +58,6 @@ export default class GratitudeList extends Component {
             <table className="table">
               <thead className="thead-light">
                 <tr>
-                  <th>Username</th>
                   <th>Description</th>
                   <th>Actions</th>
                 </tr>
