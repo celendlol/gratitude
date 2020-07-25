@@ -1,6 +1,16 @@
 const db = require("../models");
 const Email = db.email;
 
+exports.getEmailsForTheDay = (req) => {
+    const [month, date, year] = req.toLocaleDateString().split("/");
+    return Email.find({
+        date: {"$gte": new Date(year, month-1, date-1), "$lt": new Date(year, month-1, date)}
+    })
+        .then(emails => {return emails})
+        .catch(err => {return ('Error: ' + err)});
+    
+}
+
 
 exports.addEmail = (req, res) => {
     const username = req.body.username;
