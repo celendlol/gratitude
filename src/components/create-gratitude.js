@@ -29,8 +29,6 @@ export default class CreateGratitude extends Component {
       description: this.state.description,
     }
 
-    console.log(gratitude);
-
     axios.post('http://localhost:8080/api/gratitude/add', gratitude)
       .then(res => console.log(res.data));
 

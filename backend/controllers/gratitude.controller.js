@@ -1,8 +1,5 @@
 const db = require("../models");
-const { gratitude } = require("../models");
 const Gratitude = db.gratitude;
-
-require('dotenv').config();
 
 exports.getGratitudes = (req, res) => {
     Gratitude.find({

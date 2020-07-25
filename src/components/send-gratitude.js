@@ -3,19 +3,42 @@ import axios from 'axios';
 import AuthService from '../services/auth'
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import Input from "react-validation/build/input";
+import Form from "react-validation/build/form";
+import { isEmail } from "validator";
+
+const required = value => {
+  if (!value) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        This field is required!
+      </div>
+    );
+  }
+};
+
+const email = value => {
+  if (!isEmail(value)) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        This is not a valid email.
+      </div>
+    );
+  }
+};
 
 export default class EditGratitude extends Component {
   constructor(props) {
     super(props);
 
-    this.onChangeEmail = this.onChangeEmail.bind(this);
+    this.onChangeDestination = this.onChangeDestination.bind(this);
     this.onChangeDate = this.onChangeDate.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
       username: AuthService.getCurrentUser().username,
       description: '',
-      email: AuthService.getCurrentUser().email,
+      destination: AuthService.getCurrentUser().email,
       date: new Date()
     }
   }
@@ -33,9 +56,9 @@ export default class EditGratitude extends Component {
 
   }
 
-  onChangeEmail(e) {
+  onChangeDestination(e) {
     this.setState({
-      email: e.target.value
+      destination: e.target.value
     })
   }
 
@@ -51,14 +74,14 @@ export default class EditGratitude extends Component {
     const sendGratitude = {
       username: this.state.username,
       description: this.state.description,
-      email: this.state.email,
+      destination: this.state.destination,
       date: this.state.date
     }
 
     console.log(sendGratitude);
 
-    // axios.put('http://localhost:8080/api/gratitude/update/' + this.props.match.params.id, gratitude)
-    //   .then(res => console.log(res.data));
+    axios.post('http://localhost:8080/api/email/add', sendGratitude)
+      .then(res => console.log(res.data));
 
     // window.location = '/';
   }
@@ -67,29 +90,33 @@ export default class EditGratitude extends Component {
     return (
     <div>
       <h3>Send Gratitude</h3>
-      <form onSubmit={this.onSubmit}>
+      <Form onSubmit={this.onSubmit}>
         <div className="form-group"> 
           <label>Description: </label>
-          <input  type="text"
+          <Input 
+              type="text"
               required
               className="form-control"
               value={this.state.description}
               disabled={true}
-              />
+          />
           <br/>
-          <label>Email: </label>
-          <input  type="text"
-              required
+          <label>Destination: </label>
+          <Input 
+              type="text"
               className="form-control"
-              onChange={this.onChangeEmail}
-              value={this.state.email}
-              />
+              onChange={this.onChangeDestination}
+              value={this.state.destination}
+              validations={[required, email]}
+          />
           <br/>
           <label>Date: </label>
           <div>
             <DatePicker
               selected={this.state.date}
               onChange={this.onChangeDate}
+              minDate={new Date()}
+              placeholderText="Select a day"
             />
           </div>
         </div>
@@ -99,7 +126,7 @@ export default class EditGratitude extends Component {
         <div className="form-group">
           <input type="submit" value="Send Gratitude" className="btn btn-primary" />
         </div>
-      </form>
+      </Form>
     </div>
     )
   }
