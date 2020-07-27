@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 let CronJob = require('cron').CronJob;
+let nodemailer = require("nodemailer");
 
 require('dotenv').config();
 
@@ -49,15 +50,19 @@ require("./routes/gratitude.routes")(app);
 require("./routes/email.routes")(app);
 
 
+
 // check and send emails every minute
-let scheduleEmail = new CronJob('1 * * * * *', function() {
-  getEmails(new Date());
-}, null, true, 'America/Los_Angeles');
+// let scheduleEmail = new CronJob('1 * * * * *', function() {
+//   getEmails().then(emails => sendEmails(emails));
+// }, null, true, 'America/Los_Angeles');
+getEmails().then(emails => sendEmails(emails));
 
 // check and send emails at midnight
 // let scheduleEmail = new CronJob('0 0 * * *', function() {
 //   sendEmails();
 // }, null, true, 'America/Los_Angeles');
+
+// scheduleEmail.start();
 
 
 const PORT = process.env.PORT || 8080;
@@ -91,26 +96,37 @@ function initial() {
   });
 }
 
-async function getEmails(req) {
-  console.log(await getEmailsForTheDay(req));
-  // console.log(response);
-  // console.log(addEmailx(response));
-  // console.log(emailsToSend);
-  // promiseTest.then(emails => console.log(emails))
-  // .catch(err => res.status(400).json('Error: ' + err));
-  // check if any emails are suppose to be sent
-  // if none -> do nothing
-  // if 1 or more -> send emails then delete those from database
-    // let [month, date, year] = req.toLocaleDateString().split("/")
-    // console.log(month, date, year);
-    // 7 25 2020
-    // month is wrong in new date? fix?
-    // console.log(new Date('2020', '6', '25'))
-    // Email.find({
-    //     date: {"$gte": new Date('2020', '6', '24'), "$lt": new Date('2020', '6', '25')}
-    //     // {"$gte": new Date(year, month-1, date-1), "$lt": new Date(year, month-1, date)}
-    // })
-    //     .then(emails => console.log(emails))
-    //     .catch(err => console.log('Error: ' + err));
+async function getEmails() {
+  todaysDate = new Date();
+  return await getEmailsForTheDay(todaysDate);
 }
 
+function sendEmails(emails) {
+  console.log(process.env.GMAIL_USERNAME, process.env.PASSWORD);
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.GMAIL_USERNAME,
+      pass: process.env.PASSWORD
+    }
+  });
+  console.log(transporter);
+  let mailOptions = {
+    from: process.env.GMAIL_USERNAME+"@gmail.com",
+    to: process.env.EMAIL+"@gmail.com",
+    subject: `TEST`,
+    text: `TEST`
+  };
+  transporter.sendMail(mailOptions, function(error, info) {
+    if (error) {
+      throw error;
+    } else {
+      console.log("Email successfully sent!");
+    }
+  });
+  // if(emails.length === 0){
+  //   // do nothing
+  // } else {
+  //   // send the emails
+  // }
+}
