@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 let CronJob = require('cron').CronJob;
+let nodemailer = require("nodemailer");
 
 require('dotenv').config();
 
@@ -49,15 +50,19 @@ require("./routes/gratitude.routes")(app);
 require("./routes/email.routes")(app);
 
 
+
 // check and send emails every minute
-let scheduleEmail = new CronJob('1 * * * * *', function() {
-  getEmails(new Date());
-}, null, true, 'America/Los_Angeles');
+// let scheduleEmail = new CronJob('1 * * * * *', function() {
+//   getEmails().then(emails => sendEmails(emails));
+// }, null, true, 'America/Los_Angeles');
+getEmails().then(emails => sendEmails(emails));
 
 // check and send emails at midnight
 // let scheduleEmail = new CronJob('0 0 * * *', function() {
 //   sendEmails();
 // }, null, true, 'America/Los_Angeles');
+
+// scheduleEmail.start();
 
 
 const PORT = process.env.PORT || 8080;
@@ -91,7 +96,37 @@ function initial() {
   });
 }
 
-async function getEmails(req) {
-  console.log(await getEmailsForTheDay(req));
+async function getEmails() {
+  todaysDate = new Date();
+  return await getEmailsForTheDay(todaysDate);
 }
 
+function sendEmails(emails) {
+  console.log(process.env.GMAIL_USERNAME, process.env.PASSWORD);
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.GMAIL_USERNAME,
+      pass: process.env.PASSWORD
+    }
+  });
+  console.log(transporter);
+  let mailOptions = {
+    from: process.env.GMAIL_USERNAME+"@gmail.com",
+    to: process.env.EMAIL+"@gmail.com",
+    subject: `TEST`,
+    text: `TEST`
+  };
+  transporter.sendMail(mailOptions, function(error, info) {
+    if (error) {
+      throw error;
+    } else {
+      console.log("Email successfully sent!");
+    }
+  });
+  // if(emails.length === 0){
+  //   // do nothing
+  // } else {
+  //   // send the emails
+  // }
+}
