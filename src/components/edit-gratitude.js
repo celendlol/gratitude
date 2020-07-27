@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import AuthService from '../services/auth'
 
-export default class CreateGratitude extends Component {
+export default class EditGratitude extends Component {
   constructor(props) {
     super(props);
 
@@ -11,8 +11,21 @@ export default class CreateGratitude extends Component {
 
     this.state = {
       username: AuthService.getCurrentUser().username,
-      description: '',
+      description: ''
     }
+  }
+
+  componentDidMount() {
+    axios.get('http://localhost:8080/api/gratitude/retrieve/'+this.props.match.params.id)
+      .then(response => {
+        this.setState({
+          description: response.data.description
+        })   
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
+
   }
 
   onChangeDescription(e) {
@@ -25,11 +38,11 @@ export default class CreateGratitude extends Component {
     e.preventDefault();
 
     const gratitude = {
-      username: this.state.username,  
-      description: this.state.description,
+      username: this.state.username,
+      description: this.state.description
     }
 
-    axios.post('http://localhost:8080/api/gratitude/add', gratitude)
+    axios.put('http://localhost:8080/api/gratitude/update/' + this.props.match.params.id, gratitude)
       .then(res => console.log(res.data));
 
     window.location = '/';
@@ -38,7 +51,7 @@ export default class CreateGratitude extends Component {
   render() {
     return (
     <div>
-      <h3>Add New Gratitude</h3>
+      <h3>Edit Gratitude Log</h3>
       <form onSubmit={this.onSubmit}>
         <div className="form-group"> 
           <label>Description: </label>
@@ -51,7 +64,7 @@ export default class CreateGratitude extends Component {
         </div>
 
         <div className="form-group">
-          <input type="submit" value="Add Gratitude" className="btn btn-primary" />
+          <input type="submit" value="Edit Gratitude Log" className="btn btn-primary" />
         </div>
       </form>
     </div>

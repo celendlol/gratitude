@@ -1,11 +1,10 @@
 const db = require("../models");
-const { gratitude } = require("../models");
 const Gratitude = db.gratitude;
 
-require('dotenv').config();
-
 exports.getGratitudes = (req, res) => {
-    Gratitude.find()
+    Gratitude.find({
+        username: req.params.username
+    })
         .then(gratitudes => res.json(gratitudes))
         .catch(err => res.status(400).json('Error: ' + err));
     

@@ -9,9 +9,9 @@ module.exports = function(app) {
       next();
     });
   
-  app.get("/api/gratitude/", controller.getGratitudes);
+  app.get("/api/gratitude/:username", controller.getGratitudes);
 
-  app.get("/api/gratitude/:id", controller.getGratitude);
+  app.get("/api/gratitude/retrieve/:id", controller.getGratitude);
 
   app.post("/api/gratitude/add", controller.addGratitude);
 
