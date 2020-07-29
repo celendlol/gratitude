@@ -55,20 +55,59 @@ require("./routes/email.routes")(app);
 // let scheduleEmail = new CronJob('1 * * * * *', function() {
 //   getEmails().then(emails => sendEmails(emails));
 // }, null, true, 'America/Los_Angeles');
-getEmails().then(emails => sendEmails(emails));
 
 // check and send emails at midnight
-// let scheduleEmail = new CronJob('0 0 * * *', function() {
-//   sendEmails();
-// }, null, true, 'America/Los_Angeles');
+let scheduleEmail = new CronJob('0 0 * * *', function() {
+  getEmails().then(emails => sendEmails(emails));
+}, null, true, 'America/Los_Angeles');
 
-// scheduleEmail.start();
+scheduleEmail.start();
 
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+
+async function getEmails() {
+  todaysDate = new Date();
+  return await getEmailsForTheDay(todaysDate);
+}
+
+function sendEmails(emails) {
+
+  let transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+        type: 'OAuth2',
+        clientId: process.env.CLIENT_ID,
+        clientSecret: process.env.CLIENT_SECRET
+    }
+  });
+
+  for(i=0; i<emails.length; i++){
+
+    let description = emails[i].description;
+    let destination = emails[i].destination;
+    let dateCreatedOn = emails[i].createdAt;
+
+    transporter.sendMail({
+      from: process.env.GMAIL,
+      to: destination,
+      subject: 'Message',
+      text: 'On ' + dateCreatedOn + ', you were grateful for ' + description,
+      auth: {
+          user: process.env.GMAIL,
+          refreshToken: process.env.REFRESH_TOKEN,
+          accessToken: process.env.ACCESS_TOKEN,
+          expires: 1484314697598
+      }
+    }); 
+
+  }
+}
 
 function initial() {
   Role.estimatedDocumentCount((err, count) => {
@@ -94,39 +133,4 @@ function initial() {
       });
     }
   });
-}
-
-async function getEmails() {
-  todaysDate = new Date();
-  return await getEmailsForTheDay(todaysDate);
-}
-
-function sendEmails(emails) {
-  console.log(process.env.GMAIL_USERNAME, process.env.PASSWORD);
-  let transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.GMAIL_USERNAME,
-      pass: process.env.PASSWORD
-    }
-  });
-  console.log(transporter);
-  let mailOptions = {
-    from: process.env.GMAIL_USERNAME+"@gmail.com",
-    to: process.env.EMAIL+"@gmail.com",
-    subject: `TEST`,
-    text: `TEST`
-  };
-  transporter.sendMail(mailOptions, function(error, info) {
-    if (error) {
-      throw error;
-    } else {
-      console.log("Email successfully sent!");
-    }
-  });
-  // if(emails.length === 0){
-  //   // do nothing
-  // } else {
-  //   // send the emails
-  // }
 }
