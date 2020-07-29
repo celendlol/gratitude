@@ -12,6 +12,4 @@ module.exports = function(app) {
   app.post("/api/email/add", controller.addEmail);
 
   app.delete("/api/email/:id", controller.deleteEmail);
-
-  app.put("/api/email/update/:id", controller.updateEmail);
 };
