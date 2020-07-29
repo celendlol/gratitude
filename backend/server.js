@@ -20,8 +20,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const db = require("./models");
-const Email = require("./models/email.model");
-const { getEmailsForTheDay } = require("./controllers/email.controller");
+const { getEmailsForTheDay, deleteEmail } = require("./controllers/email.controller");
 const Role = db.role;
 
 const uri = process.env.ATLAS_URI;
@@ -49,27 +48,20 @@ require("./routes/user.routes")(app);
 require("./routes/gratitude.routes")(app);
 require("./routes/email.routes")(app);
 
-
-
-// check and send emails every minute
-// let scheduleEmail = new CronJob('1 * * * * *', function() {
-//   getEmails().then(emails => sendEmails(emails));
-// }, null, true, 'America/Los_Angeles');
-
-// check and send emails at midnight
+// grab emails waiting to be sent, send those emails, and then delete those emails everyday at Midnight
 let scheduleEmail = new CronJob('0 0 * * *', function() {
-  getEmails().then(emails => sendEmails(emails));
+  getEmailsForToday().then(emails => sendEmails(emails));
+  getEmailsForToday().then(emails => deleteSentEmails(emails));
 }, null, true, 'America/Los_Angeles');
 
 scheduleEmail.start();
-
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
 
-async function getEmails() {
+async function getEmailsForToday() {
   todaysDate = new Date();
   return await getEmailsForTheDay(todaysDate);
 }
@@ -96,7 +88,7 @@ function sendEmails(emails) {
     transporter.sendMail({
       from: process.env.GMAIL,
       to: destination,
-      subject: 'Message',
+      subject: 'Gratitude Journal',
       text: 'On ' + dateCreatedOn + ', you were grateful for ' + description,
       auth: {
           user: process.env.GMAIL,
@@ -105,7 +97,13 @@ function sendEmails(emails) {
           expires: 1484314697598
       }
     }); 
+  }
+}
 
+function deleteSentEmails(emails) {
+  for(i=0; i<emails.length; i++){
+    let id = emails[i].id;
+    deleteEmail(id);
   }
 }
 
