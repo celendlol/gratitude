@@ -14,7 +14,11 @@ const Gratitude = props => (
         <Button variant="danger" onClick={() => { props.deleteGratitude(props.gratitude._id) }}>delete</Button>
       </td>
       <td>
-      <Link to={"/send/"+props.gratitude._id}><Button variant="primary">send</Button></Link>
+        {
+          props.totalGratitudes === 10 ?
+          <Link to={"/send/"+props.gratitude._id}><Button variant="primary">send</Button></Link> :
+          <div>Unlocked at 10 Gratitudes</div>
+        }
       </td>
     </tr>
   )
@@ -56,7 +60,7 @@ export default class GratitudeList extends Component {
     
       gratitudeList() {
         return this.state.gratitudes.map(currentgratitude => {
-          return <Gratitude gratitude={currentgratitude} deleteGratitude={this.deleteGratitude} key={currentgratitude._id}/>;
+          return <Gratitude gratitude={currentgratitude} totalGratitudes={this.state.totalGratitudes} deleteGratitude={this.deleteGratitude} key={currentgratitude._id}/>;
         })
       }
 
@@ -66,7 +70,7 @@ export default class GratitudeList extends Component {
           <th>
             { emailGratitude }
             <BsFillCalendarFill data-tip data-for="gratitudeEmail"/>
-            <ReactTooltip id="gratitudeEmail" place="top" effect="solid">Unlocked at 20 Gratitudes</ReactTooltip>
+            <ReactTooltip id="gratitudeEmail" place="top" effect="solid">Unlocked at 10 Gratitudes</ReactTooltip>
           </th>
         )
       }
