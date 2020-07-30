@@ -50,8 +50,7 @@ require("./routes/email.routes")(app);
 
 // grab emails waiting to be sent, send those emails, and then delete those emails everyday at Midnight
 let scheduleEmail = new CronJob('0 0 * * *', function() {
-  getEmailsForToday().then(emails => sendEmails(emails));
-  getEmailsForToday().then(emails => deleteSentEmails(emails));
+  getEmailsForToday().then(emails => sendAndDeleteEmails(emails));
 }, null, true, 'America/Los_Angeles');
 
 scheduleEmail.start();
@@ -66,7 +65,7 @@ async function getEmailsForToday() {
   return await getEmailsForTheDay(todaysDate);
 }
 
-function sendEmails(emails) {
+function sendAndDeleteEmails(emails) {
 
   let transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -98,6 +97,8 @@ function sendEmails(emails) {
       }
     }); 
   }
+
+  deleteSentEmails(emails);
 }
 
 function deleteSentEmails(emails) {

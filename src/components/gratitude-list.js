@@ -17,7 +17,7 @@ const Gratitude = props => (
         {
           props.totalGratitudes === 10 ?
           <Link to={"/send/"+props.gratitude._id}><Button variant="primary">send</Button></Link> :
-          <tbody>Unlocked at 10 Gratitudes</tbody>
+          <div>Unlocked at 10 Gratitudes</div>
         }
       </td>
     </tr>

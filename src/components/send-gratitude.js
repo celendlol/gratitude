@@ -27,7 +27,7 @@ const email = value => {
   }
 };
 
-export default class EditGratitude extends Component {
+export default class SendGratitude extends Component {
   constructor(props) {
     super(props);
 
@@ -78,12 +78,10 @@ export default class EditGratitude extends Component {
       date: this.state.date
     }
 
-    console.log(sendGratitude);
-
     axios.post('http://localhost:8080/api/email/add', sendGratitude)
       .then(res => console.log(res.data));
 
-    // window.location = '/';
+    window.location = '/';
   }
 
   render() {
